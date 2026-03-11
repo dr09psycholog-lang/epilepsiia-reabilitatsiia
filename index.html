@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-<голова>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0077FF">
@@ -15,9 +15,9 @@
     <!-- VK UI Kit (опционально, для нативных компонентов) -->
     <link rel="stylesheet" href="https://unpkg.com/@vkontakte/vkui/dist/vkui.css">
     
-    <стиль>
+    <style>
         /* ===== Базовые стили ===== */
-        :корень {
+        :root {
             --vkui--color_background: #FFFFFF;
             --vkui--color_text_primary: #000000;
             --vkui--color_text_secondary: #818C99;
@@ -33,7 +33,7 @@
             отступ: 0;
         }
 
-        тело {
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--vkui--color_background);
             цвет: var(--vkui--color_text_primary);
@@ -267,7 +267,7 @@
 
         /* ===== Списки ===== */
         .info-list {
-            стиль списка: нет;
+            style списка: нет;
             отступ: 0;
         }
 
@@ -351,7 +351,7 @@
 
         /* ===== Тёмная тема (автоматически из ВК) ===== */
         @media (prefers-color-scheme: dark) {
-            :корень {
+            :root {
                 --vkui--color_background: #191919;
                 --vkui--color_text_primary: #FFFFFF;
                 --vkui--color_text_вторичный: #AAAAAA;
@@ -400,7 +400,7 @@
         }
     </style>
 </head>
-<тело>
+<body>
     <!-- Индикатор -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
