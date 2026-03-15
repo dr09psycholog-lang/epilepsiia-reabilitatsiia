@@ -2,22 +2,26 @@
 <html lang="ru">
 <head><meta charset="UTF-8"><title>Sz Screenshots</title>
 <style>body{font-family:Arial,sans-serif;background:#1a1a2e;color:white;padding:20px;}
-canvas{border:1px solid #333;margin:10px;display:block;}
+canvas{border:1px solid #333;margin:10px;display:block;max-width:300px;}
 .btn{background:#0077ff;color:white;border:none;padding:10px 20px;margin:5px;cursor:pointer;border-radius:6px;font-size:14px;}
+.btn-clip{background:#e94560;}
+#log{background:#000;padding:10px;margin-top:10px;white-space:pre-wrap;font-size:12px;max-height:200px;overflow:auto;}
 </style></head>
 <body>
 <h2>Скриншоты — Реабилитация Sz</h2>
 <div id="canvases"></div>
+<div id="log">Ready...</div>
 <script>
 const W=600,H=1200;
+const log=s=>{const el=document.getElementById('log');el.textContent+=s+'\n';el.scrollTop=el.scrollHeight;};
+const TOKEN='vk1.a.5vTVxKvMq_0geWImUSGljZ8rl5Ntu7xSoPu2JMpVT3mME9GU34dETmDhSec8aTNsYZpIgJ7P1qBp6fF306urQ1TkrrhuJK_WvxXt_Es7mMl9u-u0P_tCDt-BuwaMdxb2SKuSbuTwNHJzlu47_hOlxZD0njWpeGtCTe2cVeyLHVsiQm9mPlOoBFtY_dP0AbNLuLZaXFeetWiWU90MZGko1g';
+const APP_ID=54476082;
 const screens=[
-  {title:'Шизофрения',subtitle:'Информация о заболевании',color1:'#1565C0',color2:'#0D47A1',
-   items:['Хроническое психическое расстройство','1% населения мира','Дебют: 18-25 лет','Поддается лечению']},
-  {title:'Симптомы',subtitle:'Признаки и проявления',color1:'#4A148C',color2:'#311B92',
-   items:['Галлюцинации слуховые','Бред и бредовые идеи','Дезорганизация мышления','Эмоциональная уплощённость']},
-  {title:'Реабилитация',subtitle:'Пути восстановления',color1:'#1B5E20',color2:'#2E7D32',
-   items:['Медикаментозная терапия','Психосоциальная помощь','Трудовая адаптация','Поддержка семьи']}
+  {title:'Шизофрения',subtitle:'Информация о заболевании',color1:'#1565C0',color2:'#0D47A1',items:['Хроническое психическое расстройство','1% населения мира','Дебют: 18-25 лет','Поддается лечению']},
+  {title:'Симптомы',subtitle:'Признаки и проявления',color1:'#4A148C',color2:'#311B92',items:['Галлюцинации слуховые','Бред и бредовые идеи','Дезорганизация мышления','Эмоциональная уплощённость']},
+  {title:'Реабилитация',subtitle:'Пути восстановления',color1:'#1B5E20',color2:'#2E7D32',items:['Медикаментозная терапия','Психосоциальная помощь','Трудовая адаптация','Поддержка семьи']}
 ];
+const canvases=[];
 screens.forEach((s,i)=>{
   const c=document.createElement('canvas');
   c.width=W;c.height=H;
@@ -27,54 +31,52 @@ screens.forEach((s,i)=>{
   ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   ctx.fillStyle='rgba(255,255,255,0.05)';
   for(let y=0;y<H;y+=80){ctx.fillRect(0,y,W,1);}
-  // Logo
   ctx.fillStyle='rgba(255,255,255,0.15)';
   ctx.beginPath();ctx.arc(W/2,180,80,0,2*Math.PI);ctx.fill();
-  ctx.fillStyle='white';ctx.font='bold 52px Arial';
-  ctx.textAlign='center';ctx.fillText('Sz',W/2,200);
+  ctx.fillStyle='white';ctx.font='bold 52px Arial';ctx.textAlign='center';
+  ctx.fillText('Sz',W/2,200);
   ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.7)';
   ctx.fillText('Rehab',W/2,225);
-  // Title
   ctx.fillStyle='white';ctx.font='bold 44px Arial';
   ctx.fillText(s.title,W/2,340);
   ctx.font='20px Arial';ctx.fillStyle='rgba(255,255,255,0.75)';
   ctx.fillText(s.subtitle,W/2,385);
-  // Divider
-  ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.fillRect(80,415,440,2);
-  // Items
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fillRect(80,415,440,2);
   s.items.forEach((item,j)=>{
     const y=480+j*130;
     ctx.fillStyle='rgba(255,255,255,0.12)';
-    ctx.beginPath();
-    const r=16;const x=60;const w=480;const h=100;
-    ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
-    ctx.arcTo(x+w,y,x+w,y+r,r);
-    ctx.lineTo(x+w,y+h-r);
-    ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
-    ctx.lineTo(x+r,y+h);
-    ctx.arcTo(x,y+h,x,y+h-r,r);
-    ctx.lineTo(x,y+r);
-    ctx.arcTo(x,y,x+r,y,r);
-    ctx.fill();
-    ctx.fillStyle='white';ctx.font='bold 20px Arial';
-    ctx.textAlign='center';
+    ctx.beginPath();const r=16;const x=60;const w=480;const h=100;
+    ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+    ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+    ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.fill();
+    ctx.fillStyle='white';ctx.font='bold 20px Arial';ctx.textAlign='center';
     ctx.fillText(item,W/2,y+55);
   });
-  // Footer
-  ctx.fillStyle='rgba(255,255,255,0.4)';
-  ctx.font='16px Arial';
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='16px Arial';
   ctx.fillText('VK Mini App | Реабилитация Sz',W/2,H-30);
+  canvases.push(c);
   document.getElementById('canvases').appendChild(c);
-  const btn=document.createElement('button');
-  btn.className='btn';
-  btn.textContent='Скачать скриншот '+(i+1);
-  btn.onclick=()=>{
-    const a=document.createElement('a');
-    a.href=c.toDataURL('image/png');
-    a.download='sz-screenshot-'+(i+1)+'.png';
-    a.click();
+  const btnDl=document.createElement('button');
+  btnDl.className='btn';btnDl.textContent='Скачать '+(i+1);
+  btnDl.onclick=()=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='sz-screenshot-'+(i+1)+'.png';a.click();};
+  const btnClip=document.createElement('button');
+  btnClip.className='btn btn-clip';btnClip.textContent='Копировать '+(i+1);
+  btnClip.onclick=async()=>{
+    try{
+      const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      log('Скопировано: '+s.title+' — вставьте Ctrl+V в VK поле загрузки');
+    }catch(e){log('Ошибка clipboard: '+e);}
   };
-  document.getElementById('canvases').appendChild(btn);
+  document.getElementById('canvases').appendChild(btnDl);
+  document.getElementById('canvases').appendChild(btnClip);
+  document.getElementById('canvases').appendChild(document.createElement('hr'));
 });
+const btnAll=document.createElement('button');
+btnAll.className='btn';btnAll.style.background='#ff6600';
+btnAll.textContent='Скачать все 3 скриншота';
+btnAll.onclick=()=>canvases.forEach((c,i)=>{setTimeout(()=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='sz-screenshot-'+(i+1)+'.png';a.click();},i*500);});
+document.getElementById('canvases').appendChild(btnAll);
+log('Страница готова. Скачайте или скопируйте скриншоты.');
 </script></body></html>
