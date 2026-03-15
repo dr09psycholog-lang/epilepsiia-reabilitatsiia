@@ -3,174 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0077FF">
-    <meta name="description" content="Образовательный медицинский дашборд по кризисной ситуации при эпилепсии для студентов-медиков и специалистов">
-    <meta name="keywords" content="эпилепсия, реабилитация, психиатрия, неврология, МКБ-11, образование">
     <title>Эпилепсия: Реабилитация</title>
-    
-    <!-- VK Web App SDK -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-    
-    <!-- VK UI Kit -->
-    <link rel="stylesheet" href="https://unpkg.com/@vkontakte/vkui/dist/vkui.css">
-    
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --color-bg-primary: #0f172a;
+            --color-bg-secondary: #1e293b;
+            --color-bg-card: #334155;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-accent: #38bdf8;
+            --color-accent-hover: #0ea5e9;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-purple: #a855f7;
         }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 600px;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-        
-        h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 16px;
-        }
-        
-        .status {
-            display: inline-block;
-            padding: 8px 20px;
-            background: #f0f0f0;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 24px;
-        }
-        
-        .message {
-            font-size: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
             line-height: 1.6;
-            color: #555;
-            margin-bottom: 24px;
+            overflow-x: hidden;
         }
-        
-        .issue {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 16px;
+
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--color-accent); }
+        .header p { color: var(--color-text-secondary); font-size: 1rem; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-secondary);
+            border: 2px solid transparent;
             border-radius: 8px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        
-        .issue-title {
-            font-weight: 600;
-            color: #856404;
-            margin-bottom: 8px;
-        }
-        
-        .issue-list {
-            list-style: none;
-            padding-left: 0;
-            color: #856404;
-            font-size: 14px;
-        }
-        
-        .issue-list li {
-            padding: 4px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .issue-list li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 12px 32px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
-            margin: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
-        
-        .btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
+
+        .tab-btn:hover { background: var(--color-bg-card); border-color: var(--color-accent); }
+        .tab-btn.active { background: var(--color-accent); color: var(--color-bg-primary); border-color: var(--color-accent); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: var(--color-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--color-accent);
+            transition: transform 0.3s;
         }
-        
-        .btn-secondary {
-            background: #6c757d;
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-value { font-size: 2.5rem; font-weight: bold; color: var(--color-accent); margin-bottom: 0.5rem; }
+        .stat-label { color: var(--color-text-secondary); font-size: 0.95rem; }
+
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: var(--color-bg-secondary); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--color-bg-card); }
+        .card h3 { color: var(--color-accent); margin-bottom: 1rem; font-size: 1.25rem; }
+        .card ul { list-style: none; padding-left: 0; }
+        .card li { padding: 0.5rem 0; border-bottom: 1px solid var(--color-bg-card); color: var(--color-text-secondary); }
+        .card li:last-child { border-bottom: none; }
+        .card li strong { color: var(--color-text-primary); }
+
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; margin-left: 0.5rem; }
+        .badge-psychotic { background: rgba(239, 68, 68, 0.2); color: var(--color-danger); border: 1px solid var(--color-danger); }
+        .badge-non-psychotic { background: rgba(16, 185, 129, 0.2); color: var(--color-success); border: 1px solid var(--color-success); }
+        .badge-both { background: rgba(168, 85, 247, 0.2); color: var(--color-purple); border: 1px solid var(--color-purple); }
+
+        .classification-table { width: 100%; background: var(--color-bg-secondary); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+        .classification-table table { width: 100%; border-collapse: collapse; }
+        .classification-table th { background: var(--color-bg-card); color: var(--color-accent); padding: 1rem; text-align: left; font-weight: 600; }
+        .classification-table td { padding: 1rem; border-bottom: 1px solid var(--color-bg-card); color: var(--color-text-secondary); }
+        .classification-table tr:hover { background: var(--color-bg-card); }
+
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--color-accent); }
+        .timeline-item { position: relative; margin-bottom: 2rem; padding-left: 1.5rem; }
+        .timeline-item::before { content: ""; position: absolute; left: -2.375rem; top: 0.5rem; width: 12px; height: 12px; border-radius: 50%; background: var(--color-accent); border: 3px solid var(--color-bg-primary); }
+        .timeline-item h4 { color: var(--color-accent); margin-bottom: 0.5rem; }
+        .timeline-item p { color: var(--color-text-secondary); font-size: 0.95rem; }
+
+        .comparison-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (max-width: 768px) { .comparison-container { grid-template-columns: 1fr; } }
+
+        .interactive-selector { background: var(--color-bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; }
+        .interactive-selector h3 { color: var(--color-accent); margin-bottom: 1rem; }
+        .selector-buttons { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .selector-btn {
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-card);
+            color: var(--color-text-secondary);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
         }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .footer {
-            margin-top: 32px;
-            font-size: 12px;
-            color: #999;
-        }
+        .selector-btn:hover { border-color: var(--color-accent); }
+        .selector-btn.selected { background: var(--color-accent); color: var(--color-bg-primary); border-color: var(--color-accent); }
+
+        .result-box { background: var(--color-bg-card); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--color-accent); display: none; }
+        .result-box.show { display: block; animation: fadeIn 0.4s; }
+        .result-box h4 { color: var(--color-accent); margin-bottom: 1rem; }
+        .result-box ul { list-style: none; padding-left: 0; }
+        .result-box li { padding: 0.5rem 0; color: var(--color-text-secondary); }
+        .result-box li::before { content: "✓"; color: var(--color-accent); margin-right: 0.5rem; }
+
+        .footer { text-align: center; padding: 2rem; color: var(--color-text-secondary); border-top: 1px solid var(--color-bg-card); margin-top: 3rem; }
+        .highlight { background: rgba(56, 189, 248, 0.2); padding: 0.2rem 0.4rem; border-radius: 4px; color: var(--color-accent); }
     </style>
 </head>
 <body>
-    <div class="container">
+    <header class="header">
         <h1>🧠 Эпилепсия: Реабилитация</h1>
-        <div class="status">⚠️ Сайт временно недоступен</div>
-        
-        <div class="message">
-            Приложение находится в процессе исправления технических проблем.
+        <p>Комплексный дашборд по психическим расстройствам и методам восстановления</p>
+    </header>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">2,5 млн</div>
+                <div class="stat-label">Больных эпилепсией в СНГ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">75%</div>
+                <div class="stat-label">Имеют психические расстройства</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">68,5%</div>
+                <div class="stat-label">Нарушений в межприступный период</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">90%</div>
+                <div class="stat-label">Достигают ремиссии при лечении</div>
+            </div>
         </div>
-        
-        <div class="issue">
-            <div class="issue-title">Обнаруженные проблемы:</div>
-            <ul class="issue-list">
-                <li>HTML/CSS код содержал неверный синтаксис (русские свойства вместо английских)</li>
-                <li>JavaScript содержал синтаксические ошибки</li>
-                <li>Браузер не мог корректно отобразить страницу</li>
-            </ul>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">Обзор</button>
+            <button class="tab-btn" onclick="showTab('classification')">Классификация</button>
+            <button class="tab-btn" onclick="showTab('psychotic')">Психотические формы</button>
+            <button class="tab-btn" onclick="showTab('therapy')">Терапия</button>
+            <button class="tab-btn" onclick="showTab('rehabilitation')">Реабилитация</button>
+            <button class="tab-btn" onclick="showTab('interactive')">Подбор методов</button>
+        </nav>
+
+        <div id="overview" class="tab-content active">
+            <div class="content-grid">
+                <div class="card">
+                    <h3>📋 Типы расстройств</h3>
+                    <ul>
+                        <li><strong>Пароксизмальные:</strong> припадки, дисфории, сумеречные состояния</li>
+                        <li><strong>Перманентные:</strong> изменения личности, деменция</li>
+                        <li><strong>По связи с припадком:</strong> продромальные, иктальные, постиктальные</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>МКБ-10 Коды</h3>
+                    <ul>
+                        <li><strong>G40.0–G40.9:</strong> Эпилепсия (основные формы)</li>
+                        <li><strong>F07.02:</strong> Расстройства личности</li>
+                        <li><strong>F06.811:</strong> Расстройства поведения</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🎯 Принципы реабилитации</h3>
+                    <ul>
+                        <li>Мультидисциплинарный подход</li>
+                        <li>Индивидуальная психофармакотерапия</li>
+                        <li>Социально-трудовая адаптация</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📈 Прогноз</h3>
+                    <ul>
+                        <li><strong>70%:</strong> эффективность мероприятий</li>
+                        <li><strong>3-5 лет:</strong> период регресса изменений личности</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        
-        <div class="message">
-            <strong>Текущий статус:</strong> Проводится исправление кода. Приложение будет восстановлено в ближайшее время.
+
+        <div id="classification" class="tab-content">
+            <h2 style="color: var(--color-accent); margin-bottom: 1.5rem;">Классификация расстройств</h2>
+            <div class="classification-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Категория</th>
+                            <th>Подтип</th>
+                            <th>Характеристика</th>
+                            <th>Тип</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="4"><strong>По отношению к приступу</strong></td>
+                            <td>Продромальные</td>
+                            <td>Предвестники (у 10% больных)</td>
+                            <td><span class="badge badge-non-psychotic">Непсихотич.</span></td>
+                        </tr>
+                        <tr>
+                            <td>Иктальные</td>
+                            <td>Во время припадка</td>
+                            <td><span class="badge badge-both">Оба типа</span></td>
+                        </tr>
+                        <tr>
+                            <td>Постиктальные</td>
+                            <td>После припадка (через 12-120ч)</td>
+                            <td><span class="badge badge-psychotic">Психотич.</span></td>
+                        </tr>
+                        <tr>
+                            <td>Интериктальные</td>
+                            <td>Межприступный период</td>
+                            <td><span class="badge badge-both">Оба типа</span></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>По длительности</strong></td>
+                            <td>Пароксизмальные</td>
+                            <td>Кратковременные (секунды - сутки)</td>
+                            <td><span class="badge badge-both">Оба типа</span></td>
+                        </tr>
+                        <tr>
+                            <td>Перманентные</td>
+                            <td>Постоянные (личность, интеллект)</td>
+                            <td><span class="badge badge-non-psychotic">Непсихотич.</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        
-        <a href="https://github.com/dr09psycholog-lang/epilepsiia-reabilitatsiia" class="btn">Репозиторий на GitHub</a>
-        <a href="https://vk.com/app54476393" class="btn btn-secondary">VK Mini App</a>
-        
-        <div class="footer">
-            © 2025 | VK Mini App ID: 54476393<br>
-            Образовательный медицинский дашборд
+
+        <div id="psychotic" class="tab-content">
+            <div class="comparison-container">
+                <div class="card">
+                    <h3>⚡ Иктальные психозы</h3>
+                    <ul>
+                        <li><strong>Причина:</strong> бессудорожный статус</li>
+                        <li><strong>Проявления:</strong> автоматизмы, галлюцинации</li>
+                        <li><strong>Сознание:</strong> сумеречное помрачение</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔄 Постиктальные психозы</h3>
+                    <ul>
+                        <li><strong>Начало:</strong> 12-120ч после серии приступов</li>
+                        <li><strong>Проявления:</strong> острый бред, возбуждение</li>
+                        <li><strong>Длительность:</strong> 1-2 недели</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <h3>🧠 Интериктальные психозы (Синдром Ландольта)</h3>
+                <p style="color: var(--color-text-secondary); margin-bottom: 1rem;">Возникают при "насильственной нормализации" ЭЭГ.</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Острый параноид</h4>
+                        <p>Чувственный бред, устрашающие галлюцинации, агрессивность.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Дисфорические психозы</h4>
+                        <p>Тоскливо-злобное настроение, маниакально-экстатические состояния.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="therapy" class="tab-content">
+            <div class="content-grid">
+                <div class="card">
+                    <h3>💊 Базовая терапия (АЭП)</h3>
+                    <ul>
+                        <li>Вальпроаты (нейропротекция)</li>
+                        <li>Ламотриджин (нормотимик)</li>
+                        <li>Леветирацетам</li>
+                        <li class="highlight">Избегать барбитуратов</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🧪 Антипсихотики</h3>
+                    <ul>
+                        <li>Арипипразол (5-20 мг)</li>
+                        <li>Рисперидон (2-4 мг)</li>
+                        <li>Галоперидол (низкие дозы)</li>
+                        <li class="highlight">Дозы: 25-50% от стандартных</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>😔 Антидепрессанты</h3>
+                    <ul>
+                        <li>Пароксетин (20-40 мг)</li>
+                        <li>Сертралин (50-100 мг)</li>
+                        <li class="highlight">Осторожно с ТЦА (судороги)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🧬 Нейрометаболики</h3>
+                    <ul>
+                        <li>Пантогам (ноотроп + АЭП)</li>
+                        <li>Фенибут (транквилизатор)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="rehabilitation" class="tab-content">
+            <div class="content-grid">
+                <div class="card">
+                    <h3>🧠 Психотерапия</h3>
+                    <ul>
+                        <li>КПТ (эффективность 45-90%)</li>
+                        <li>UPLIFT (майндфулнесс)</li>
+                        <li>Рациональная терапия</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔬 Нейрореабилитация</h3>
+                    <p>Программа CoRE (8 недель):</p>
+                    <ul>
+                        <li>Психообразование</li>
+                        <li>Копинг-стратегии</li>
+                        <li>Когнитивный тренинг</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚡ Стимуляция (ТМС)</h3>
+                    <ul>
+                        <li>Низкочастотная ТМС (0,3-1 Гц)</li>
+                        <li>Снижение приступов на 60%</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>💼 Социальная адаптация</h3>
+                    <ul>
+                        <li>Трудотерапия</li>
+                        <li>Борьба со стигматизацией</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="interactive" class="tab-content">
+            <div class="interactive-selector">
+                <h3>Подбор методов по типу расстройства</h3>
+                <div class="selector-buttons">
+                    <button class="selector-btn" onclick="selectDisorder('ictal')">Иктальные психозы</button>
+                    <button class="selector-btn" onclick="selectDisorder('postictal')">Постиктальные психозы</button>
+                    <button class="selector-btn" onclick="selectDisorder('landolt')">Синдром Ландольта</button>
+                    <button class="selector-btn" onclick="selectDisorder('personality')">Изменения личности</button>
+                    <button class="selector-btn" onclick="selectDisorder('depression')">Депрессия</button>
+                </div>
+
+                <div id="result-ictal" class="result-box">
+                    <h4>Рекомендации при иктальных психозах</h4>
+                    <ul>
+                        <li>Оптимизация АЭП (вальпроаты)</li>
+                        <li>Нейролептики в низких дозах</li>
+                        <li>ЭЭГ-мониторинг бессудорожного статуса</li>
+                    </ul>
+                </div>
+                <div id="result-postictal" class="result-box">
+                    <h4>Рекомендации при постиктальных психозах</h4>
+                    <ul>
+                        <li>Арипипразол 5-15 мг или Рисперидон 2-4 мг</li>
+                        <li>Транквилизаторы (Диазепам) коротким курсом</li>
+                        <li>Нейропротекция (Пантогам)</li>
+                    </ul>
+                </div>
+                <div id="result-landolt" class="result-box">
+                    <h4>Рекомендации при синдроме Ландольта</h4>
+                    <ul>
+                        <li>Пересмотр АЭП: отмена барбитуратов</li>
+                        <li>Снижение дозы топирамата/леветирацетама</li>
+                        <li>Арипипразол в минимальных дозах</li>
+                    </ul>
+                </div>
+                <div id="result-personality" class="result-box">
+                    <h4>Рекомендации при изменениях личности</h4>
+                    <ul>
+                        <li>Контроль приступов как основа</li>
+                        <li>Карбамазепин (нормотимический эффект)</li>
+                        <li>КПТ: работа с вязкостью и вспыльчивостью</li>
+                    </ul>
+                </div>
+                <div id="result-depression" class="result-box">
+                    <h4>Рекомендации при депрессии</h4>
+                    <ul>
+                        <li>СИОЗС (Сертралин, Пароксетин)</li>
+                        <li>Программа UPLIFT</li>
+                        <li>Поведенческая активация</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-    
+
+    <footer class="footer">
+        <p>© 2026 | Медицинский образовательный проект</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Источники: МКБ-10, МКБ-11, НИПНИ им. Бехтерева</p>
+    </footer>
+
     <script>
-        // VK Bridge initialization
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (window.vkBridge) {
+                vkBridge.send('VKWebAppTapticImpactOccurred', { style: 'light' });
+            }
+        }
+
+        function selectDisorder(type) {
+            document.querySelectorAll('.result-box').forEach(r => r.classList.remove('show'));
+            document.querySelectorAll('.selector-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('result-' + type).classList.add('show');
+            event.target.classList.add('selected');
+
+            if (window.vkBridge) {
+                vkBridge.send('VKWebAppTapticImpactOccurred', { style: 'medium' });
+            }
+        }
+
         if (window.vkBridge) {
-            vkBridge.send('VKWebAppInit')
-                .then(() => {
-                    console.log('✅ VK Mini App initialized successfully');
-                })
-                .catch(err => {
-                    console.error('❌ VK initialization error:', err);
-                });
+            vkBridge.send('VKWebAppInit');
         }
     </script>
 </body>
