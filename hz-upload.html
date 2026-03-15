@@ -6,11 +6,19 @@ body{font-family:Arial,sans-serif;background:#1a1a2e;color:white;padding:20px;}
 canvas{border:1px solid #333;margin:10px;display:block;max-width:300px;}
 .btn{background:#0077ff;color:white;border:none;padding:10px 20px;margin:5px;cursor:pointer;border-radius:6px;font-size:14px;}
 .btn-clip{background:#e94560;}
+.btn-upload{background:#00aa44;}
 #log{background:#000;padding:10px;margin-top:10px;white-space:pre-wrap;font-size:12px;max-height:200px;overflow:auto;}
+.upload-area{border:2px dashed #555;padding:20px;margin:10px 0;border-radius:8px;}
 </style>
 </head>
 <body>
 <h2>Скриншоты — Химическая зависимость</h2>
+<div class="upload-area">
+<p>Загрузите файлы напрямую в VK (выберите файл и загрузите):</p>
+<input type="file" id="fileInput1" accept="image/*" style="display:block;margin:5px 0;padding:5px;background:#333;color:white;border-radius:4px;">
+<input type="file" id="fileInput2" accept="image/*" style="display:block;margin:5px 0;padding:5px;background:#333;color:white;border-radius:4px;">
+<input type="file" id="fileInput3" accept="image/*" style="display:block;margin:5px 0;padding:5px;background:#333;color:white;border-radius:4px;">
+</div>
 <div id="canvases"></div>
 <div id="log">Готово...</div>
 <script>
@@ -23,7 +31,7 @@ const screens=[
 ];
 const canvases=[];
 screens.forEach((s,i)=>{
-  const c=document.createElement('canvas');
+  const c = document.createElement('canvas');
   c.width=W;c.height=H;
   const ctx=c.getContext('2d');
   const g=ctx.createLinearGradient(0,0,0,H);
@@ -57,26 +65,50 @@ screens.forEach((s,i)=>{
   ctx.fillText('Мини-приложение ВК | Химическая зависимость',W/2,H-30);
   canvases.push(c);
   document.getElementById('canvases').appendChild(c);
-  const btnDl=document.createElement('button');
+  const btnDl = document.createElement('button');
   btnDl.className='btn';btnDl.textContent='Скачать '+(i+1);
-  btnDl.onclick=()=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='hz-screenshot-'+(i+1)+'.png';a.click();};
-  const btnClip=document.createElement('button');
+  btnDl.onclick=()=>{
+    const a=document.createElement('a');
+    a.href=c.toDataURL('image/jpeg',0.95);
+    a.download='hz-screenshot-'+(i+1)+'.jpg';
+    a.click();
+  };
+  const btnClip = document.createElement('button');
   btnClip.className='btn btn-clip';btnClip.textContent='Копировать '+(i+1);
   btnClip.onclick=async()=>{
     try{
-      const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
       await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
       log('Скопировано: '+s.title+' — вставьте Ctrl+V в поле загрузки ВК');
     }catch(e){log('Ошибка: '+e);}
   };
+  const btnAutoFill = document.createElement('button');
+  btnAutoFill.className='btn btn-upload';btnAutoFill.textContent='Заполнить input '+(i+1);
+  btnAutoFill.onclick=async()=>{
+    try{
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.95));
+      const file = new File([blob], 'hz-screenshot-'+(i+1)+'.jpg', {type:'image/jpeg'});
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      const inp = document.getElementById('fileInput'+(i+1));
+      inp.files = dt.files;
+      log('Файл '+(i+1)+' добавлен в input'+( i+1));
+    }catch(e){log('Ошибка: '+e);}
+  };
   document.getElementById('canvases').appendChild(btnDl);
   document.getElementById('canvases').appendChild(btnClip);
+  document.getElementById('canvases').appendChild(btnAutoFill);
   document.getElementById('canvases').appendChild(document.createElement('hr'));
 });
-const btnAll=document.createElement('button');
+const btnAll = document.createElement('button');
 btnAll.className='btn';btnAll.style.background='#ff6600';
-btnAll.textContent='Скачать все 3 скриншота';
-btnAll.onclick=()=>canvases.forEach((c,i)=>{setTimeout(()=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='hz-screenshot-'+(i+1)+'.png';a.click();},i*500);});
+btnAll.textContent='Скачать все 3 скриншота (JPEG)';
+btnAll.onclick=()=>canvases.forEach((c,i)=>{setTimeout(()=>{
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/jpeg',0.95);
+  a.download='hz-screenshot-'+(i+1)+'.jpg';
+  a.click();
+},i*500);});
 document.getElementById('canvases').appendChild(btnAll);
 log('Страница готова. Загрузите или скопируйте скриншоты.');
 </script>
