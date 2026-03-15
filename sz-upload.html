@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Sz Screenshots</title>
+<style>body{font-family:Arial,sans-serif;background:#1a1a2e;color:white;padding:20px;}
+canvas{border:1px solid #333;margin:10px;display:block;}
+.btn{background:#0077ff;color:white;border:none;padding:10px 20px;margin:5px;cursor:pointer;border-radius:6px;font-size:14px;}
+</style></head>
+<body>
+<h2>Скриншоты — Реабилитация Sz</h2>
+<div id="canvases"></div>
+<script>
+const W=600,H=1200;
+const screens=[
+  {title:'Шизофрения',subtitle:'Информация о заболевании',color1:'#1565C0',color2:'#0D47A1',
+   items:['Хроническое психическое расстройство','1% населения мира','Дебют: 18-25 лет','Поддается лечению']},
+  {title:'Симптомы',subtitle:'Признаки и проявления',color1:'#4A148C',color2:'#311B92',
+   items:['Галлюцинации слуховые','Бред и бредовые идеи','Дезорганизация мышления','Эмоциональная уплощённость']},
+  {title:'Реабилитация',subtitle:'Пути восстановления',color1:'#1B5E20',color2:'#2E7D32',
+   items:['Медикаментозная терапия','Психосоциальная помощь','Трудовая адаптация','Поддержка семьи']}
+];
+screens.forEach((s,i)=>{
+  const c=document.createElement('canvas');
+  c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,s.color1);g.addColorStop(1,s.color2);
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,0.05)';
+  for(let y=0;y<H;y+=80){ctx.fillRect(0,y,W,1);}
+  // Logo
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.beginPath();ctx.arc(W/2,180,80,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle='white';ctx.font='bold 52px Arial';
+  ctx.textAlign='center';ctx.fillText('Sz',W/2,200);
+  ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.fillText('Rehab',W/2,225);
+  // Title
+  ctx.fillStyle='white';ctx.font='bold 44px Arial';
+  ctx.fillText(s.title,W/2,340);
+  ctx.font='20px Arial';ctx.fillStyle='rgba(255,255,255,0.75)';
+  ctx.fillText(s.subtitle,W/2,385);
+  // Divider
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillRect(80,415,440,2);
+  // Items
+  s.items.forEach((item,j)=>{
+    const y=480+j*130;
+    ctx.fillStyle='rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    const r=16;const x=60;const w=480;const h=100;
+    ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+    ctx.arcTo(x+w,y,x+w,y+r,r);
+    ctx.lineTo(x+w,y+h-r);
+    ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r,y+h);
+    ctx.arcTo(x,y+h,x,y+h-r,r);
+    ctx.lineTo(x,y+r);
+    ctx.arcTo(x,y,x+r,y,r);
+    ctx.fill();
+    ctx.fillStyle='white';ctx.font='bold 20px Arial';
+    ctx.textAlign='center';
+    ctx.fillText(item,W/2,y+55);
+  });
+  // Footer
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.font='16px Arial';
+  ctx.fillText('VK Mini App | Реабилитация Sz',W/2,H-30);
+  document.getElementById('canvases').appendChild(c);
+  const btn=document.createElement('button');
+  btn.className='btn';
+  btn.textContent='Скачать скриншот '+(i+1);
+  btn.onclick=()=>{
+    const a=document.createElement('a');
+    a.href=c.toDataURL('image/png');
+    a.download='sz-screenshot-'+(i+1)+'.png';
+    a.click();
+  };
+  document.getElementById('canvases').appendChild(btn);
+});
+</script></body></html>
