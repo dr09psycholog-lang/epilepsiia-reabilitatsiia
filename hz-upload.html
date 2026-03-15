@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Hz Screenshots</title>
+<style>
+body{font-family:Arial,sans-serif;background:#1a1a2e;color:white;padding:20px;}
+canvas{border:1px solid #333;margin:10px;display:block;max-width:300px;}
+.btn{background:#0077ff;color:white;border:none;padding:10px 20px;margin:5px;cursor:pointer;border-radius:6px;font-size:14px;}
+.btn-clip{background:#e94560;}
+#log{background:#000;padding:10px;margin-top:10px;white-space:pre-wrap;font-size:12px;max-height:200px;overflow:auto;}
+</style>
+</head>
+<body>
+<h2>Скриншоты — Химическая зависимость</h2>
+<div id="canvases"></div>
+<div id="log">Готово...</div>
+<script>
+const W=600,H=1200;
+const log=s=>{const el=document.getElementById('log');el.textContent+=s+'\n';el.scrollTop=el.scrollHeight;};
+const screens=[
+{title:'Зависимость',subtitle:'Симптомы и синдромы',color1:'#1a237e',color2:'#283593',items:['3,2 млн смертей в год (ВОЗ)','400 млн с алк. расстройством','6 млн употр. наркотики в РФ','МКБ-10/11 · DSM-5 классиф.']},
+{title:'Синдромы',subtitle:'Признаки зависимости',color1:'#4a148c',color2:'#6a1b9a',items:['Патологическое влечение','Синдром отмены (абстиненция)','Рост толерантности','Потеря контроля над дозой']},
+{title:'Реабилитация',subtitle:'Пути выздоровления',color1:'#1b5e20',color2:'#2e7d32',items:['Детоксикация организма','Психотерапия и поддержка','Группы взаимопомощи','Социальная реинтеграция']}
+];
+const canvases=[];
+screens.forEach((s,i)=>{
+  const c=document.createElement('canvas');
+  c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,s.color1);g.addColorStop(1,s.color2);
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,0.05)';
+  for(let y=0;y<H;y+=80){ctx.fillRect(0,y,W,1);}
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.beginPath();ctx.arc(W/2,180,80,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle='white';ctx.font='bold 48px Arial';ctx.textAlign='center';
+  ctx.fillText('Hz',W/2,168);
+  ctx.font='14px Arial';ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.fillText('Хим. зависимость',W/2,198);
+  ctx.fillStyle='white';ctx.font='bold 44px Arial';
+  ctx.fillText(s.title,W/2,310);
+  ctx.font='20px Arial';ctx.fillStyle='rgba(255,255,255,0.75)';
+  ctx.fillText(s.subtitle,W/2,355);
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fillRect(80,385,440,2);
+  s.items.forEach((item,j)=>{
+    const y=450+j*150;
+    ctx.fillStyle='rgba(255,255,255,0.1)';
+    ctx.beginPath();const r=16;const x=60;const w=480;const h=110;
+    ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+    ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+    ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.fill();
+    ctx.fillStyle='white';ctx.font='bold 22px Arial';ctx.textAlign='center';
+    ctx.fillText(item,W/2,y+62);
+  });
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='16px Arial';
+  ctx.fillText('Мини-приложение ВК | Химическая зависимость',W/2,H-30);
+  canvases.push(c);
+  document.getElementById('canvases').appendChild(c);
+  const btnDl=document.createElement('button');
+  btnDl.className='btn';btnDl.textContent='Скачать '+(i+1);
+  btnDl.onclick=()=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='hz-screenshot-'+(i+1)+'.png';a.click();};
+  const btnClip=document.createElement('button');
+  btnClip.className='btn btn-clip';btnClip.textContent='Копировать '+(i+1);
+  btnClip.onclick=async()=>{
+    try{
+      const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      log('Скопировано: '+s.title+' — вставьте Ctrl+V в поле загрузки ВК');
+    }catch(e){log('Ошибка: '+e);}
+  };
+  document.getElementById('canvases').appendChild(btnDl);
+  document.getElementById('canvases').appendChild(btnClip);
+  document.getElementById('canvases').appendChild(document.createElement('hr'));
+});
+const btnAll=document.createElement('button');
+btnAll.className='btn';btnAll.style.background='#ff6600';
+btnAll.textContent='Скачать все 3 скриншота';
+btnAll.onclick=()=>canvases.forEach((c,i)=>{setTimeout(()=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='hz-screenshot-'+(i+1)+'.png';a.click();},i*500);});
+document.getElementById('canvases').appendChild(btnAll);
+log('Страница готова. Загрузите или скопируйте скриншоты.');
+</script>
+</body>
+</html>
