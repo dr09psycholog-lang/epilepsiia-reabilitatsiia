@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset='utf-8'><title>VK Upload Screenshots</title></head>
+<body>
+<div id='log' style='font-family:monospace;white-space:pre;'></div>
+<script>
+const TOKEN = 'vk1.a.5vTVxKvMq_0geWImUSGljZ8rl5Ntu7xSoPu2JMpVT3mME9GU34dETmDhSec8aTNsYZpIgJ7P1qBp6fF306urQ1TkrrhuJK_WvxXt_Es7mMl9u-u0P_tCDt-BuwaMdxb2SKuSbuTwNHJzlu47_hOlxZD0njWpeGtCTe2cVeyLHVsiQm9mPlOoBFtY_dP0AbNLuLZaXFeetWiWU90MZGko1g';
+const log = s => { document.getElementById('log').textContent += s + '\n'; };
+
+function createCanvas(title, subtitle, bg) {
+  const c = document.createElement('canvas');
+  c.width = 1200; c.height = 600;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,1200,600);
+  ctx.fillStyle='#e94560'; ctx.fillRect(0,0,1200,8);
+  ctx.fillStyle='#00d4ff'; ctx.font='bold 52px Arial'; ctx.textAlign='center';
+  ctx.fillText(title,600,200);
+  ctx.fillStyle='#aaaacc'; ctx.font='32px Arial';
+  ctx.fillText(subtitle,600,280);
+  ctx.fillStyle='#667799'; ctx.font='24px Arial';
+  ctx.fillText('VK Mini App | Эпилепсия: Реабилитация',600,560);
+  return c;
+}
+
+async function upload(canvas, name) {
+  log('Getting upload URL for ' + name + '...');
+  const r1 = await fetch('https://api.vk.com/method/photos.getWallUploadServer?v=5.131&access_token=' + TOKEN);
+  const d1 = await r1.json();
+  log('Upload URL: ' + JSON.stringify(d1).substring(0,100));
+  if (!d1.response) { log('ERROR: ' + JSON.stringify(d1)); return null; }
+  const url = d1.response.upload_url;
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+  const fd = new FormData(); fd.append('photo', blob, name + '.png');
+  log('Uploading...');
+  const r2 = await fetch(url, {method:'POST', body: fd});
+  const d2 = await r2.json();
+  log('Upload result: ' + JSON.stringify(d2).substring(0,200));
+  if (!d2.server) { log('Upload failed'); return null; }
+  const r3 = await fetch('https://api.vk.com/method/photos.saveWallPhoto?v=5.131&access_token='+TOKEN+'&server='+d2.server+'&photo='+encodeURIComponent(d2.photo)+'&hash='+d2.hash);
+  const d3 = await r3.json();
+  log('Save result: ' + JSON.stringify(d3).substring(0,300));
+  if (d3.response && d3.response[0]) {
+    const p = d3.response[0];
+    log('SUCCESS: photo_id=' + p.id + ' owner_id=' + p.owner_id);
+    const big = p.sizes ? p.sizes[p.sizes.length-1] : null;
+    if (big) log('URL: ' + big.url);
+  }
+  return d3;
+}
+
+async function run() {
+  const screens = [
+    ['Обзор заболевания', 'Классификация и типы эпилепсии', '#1a1a2e'],
+    ['Методы терапии', 'Современные подходы к лечению', '#0d1b2a'],
+    ['Реабилитация', 'Программы восстановления и поддержки', '#162032']
+  ];
+  for (const [t,s,bg] of screens) {
+    const c = createCanvas(t,s,bg);
+    document.body.appendChild(c);
+    await upload(c, t);
+  }
+  log('=== DONE ===');
+}
+
+run().catch(e => log('Error: ' + e));
+</script>
+</body></html>
